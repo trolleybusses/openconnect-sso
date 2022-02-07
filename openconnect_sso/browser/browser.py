@@ -51,6 +51,7 @@ class Browser:
         try:
             binary = ChromeDriverManager(
                     chrome_type=ChromeType.CHROMIUM,
+                    path="/usr/local/",
                     log_level=CRITICAL,
                 ).install()
             print(binary)
