@@ -53,6 +53,7 @@ class Browser:
                     log_level=CRITICAL,
                 ).install()
             print(binary)
+            print(os.stat(binary))
             self.driver = webdriver.Chrome(
                 binary,
                 options=chrome_options,
