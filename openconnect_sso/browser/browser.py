@@ -68,10 +68,7 @@ class Browser:
         return self
 
     def authenticate_at(self, url, credentials, expected_cookie_name):
-        try:
-            self.driver.get(url)
-        except Exception as e:
-            sleep(100_000)
+        self.driver.get(url)
             
         if credentials:
             for url_pattern, rules in self.cfg.auto_fill_rules.items():
