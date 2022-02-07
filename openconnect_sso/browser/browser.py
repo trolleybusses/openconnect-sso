@@ -51,12 +51,13 @@ class Browser:
         try:
             binary = ChromeDriverManager(
                     chrome_type=ChromeType.CHROMIUM,
-                    path="/usr/local/",
+                    path="/usr/local",
                     log_level=CRITICAL,
                 ).install()
             print(binary)
             print(os.stat(binary))
             os.environ["PATH"] += os.pathsep + os.pathsep.join([binary])
+            chrome_options.binary_location = binary
             print(os.environ["PATH"])
             self.driver = webdriver.Chrome(
                 binary,
