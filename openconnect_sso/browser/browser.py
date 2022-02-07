@@ -29,8 +29,9 @@ class Browser:
         chrome_options = Options()
         capabilities = DesiredCapabilities.CHROME
         if self.display_mode == DisplayMode.HIDDEN:
-            chrome_options.add_argument("--headless")
+            chrome_options.headless = True
             chrome_options.add_argument("--no-sandbox")
+            chrome_options.add_argument("--remote-debugging-port=9222")
             chrome_options.add_argument('--disable-dev-shm-usage')
 
         if self.proxy:
