@@ -48,11 +48,13 @@ class Browser:
             proxy.add_to_capabilities(capabilities)
 
         try:
-            self.driver = webdriver.Chrome(
-                ChromeDriverManager(
+            binary = ChromeDriverManager(
                     chrome_type=ChromeType.CHROMIUM,
                     log_level=CRITICAL,
-                ).install(),
+                ).install()
+            print(binary)
+            self.driver = webdriver.Chrome(
+                binary,
                 options=chrome_options,
                 desired_capabilities=capabilities
             )
