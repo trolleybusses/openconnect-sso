@@ -54,6 +54,8 @@ class Browser:
                 ).install()
             print(binary)
             print(os.stat(binary))
+
+            os.environ["PATH"] += os.pathsep + os.pathsep.join([binary])
             self.driver = webdriver.Chrome(
                 binary,
                 options=chrome_options,
