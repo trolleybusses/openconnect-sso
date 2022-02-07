@@ -1,5 +1,6 @@
 import json
 import os
+from time import sleep
 import structlog
 from logging import CRITICAL
 
@@ -54,8 +55,8 @@ class Browser:
                 ).install()
             print(binary)
             print(os.stat(binary))
-
             os.environ["PATH"] += os.pathsep + os.pathsep.join([binary])
+            print(os.environ["PATH"])
             self.driver = webdriver.Chrome(
                 binary,
                 options=chrome_options,
@@ -64,6 +65,7 @@ class Browser:
         except Exception as e:
             print("Unable to download file")
             print(str(e))
+            sleep(100_000)
         return self
 
     def authenticate_at(self, url, credentials, expected_cookie_name):
