@@ -1,4 +1,5 @@
 import json
+import os
 import structlog
 from logging import CRITICAL
 
@@ -46,11 +47,18 @@ class Browser:
 
             proxy.add_to_capabilities(capabilities)
 
-        self.driver = webdriver.Chrome(
-            ChromeDriverManager(chrome_type=ChromeType.CHROMIUM, log_level=CRITICAL).install(),
-            options=chrome_options,
-            desired_capabilities=capabilities
-        )
+        try:
+            self.driver = webdriver.Chrome(
+                ChromeDriverManager(
+                    chrome_type=ChromeType.CHROMIUM,
+                    log_level=CRITICAL,
+                ).install(),
+                options=chrome_options,
+                desired_capabilities=capabilities
+            )
+        except Exception as e:
+            print("Unable to download file")
+            print(str(e))
         return self
 
     def authenticate_at(self, url, credentials, expected_cookie_name):
