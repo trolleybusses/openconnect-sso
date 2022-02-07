@@ -1,6 +1,5 @@
 import json
 import os
-from time import sleep
 import structlog
 from logging import CRITICAL
 
@@ -29,8 +28,8 @@ class Browser:
         chrome_options = Options()
         capabilities = DesiredCapabilities.CHROME
         if self.display_mode == DisplayMode.HIDDEN:
-            chrome_options.headless = True
-            chrome_options.add_argument("--no-sandbox")
+            chrome_options.add_argument("headless")
+            chrome_options.add_argument("no-sandbox")
             chrome_options.add_argument('--disable-dev-shm-usage')
 
         if self.proxy:
@@ -48,30 +47,19 @@ class Browser:
 
             proxy.add_to_capabilities(capabilities)
 
-        try:
-            binary = ChromeDriverManager(
-                    chrome_type=ChromeType.CHROMIUM,
-                    path="/usr/local",
-                    log_level=CRITICAL,
-                ).install()
-            print(binary)
-            print(os.stat(binary))
-            os.environ["PATH"] += os.pathsep + os.pathsep.join([binary])
-            chrome_options.binary_location = binary
-            print(os.environ["PATH"])
-            self.driver = webdriver.Chrome(
-                binary,
-                options=chrome_options,
-                desired_capabilities=capabilities
-            )
-        except Exception as e:
-            print("Unable to download file")
-            print(str(e))
+        self.driver = webdriver.Chrome(
+            ChromeDriverManager(
+                chrome_type=ChromeType.CHROMIUM,
+                log_level=CRITICAL,
+                version=os.getenv("CHROME_VERSION", "latest")
+            ).install(),
+            options=chrome_options,
+            desired_capabilities=capabilities
+        )
         return self
 
     def authenticate_at(self, url, credentials, expected_cookie_name):
         self.driver.get(url)
-            
         if credentials:
             for url_pattern, rules in self.cfg.auto_fill_rules.items():
                 script = f"""
