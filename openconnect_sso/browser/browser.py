@@ -65,11 +65,14 @@ class Browser:
         except Exception as e:
             print("Unable to download file")
             print(str(e))
-            sleep(100_000)
         return self
 
     def authenticate_at(self, url, credentials, expected_cookie_name):
-        self.driver.get(url)
+        try:
+            self.driver.get(url)
+        except Exception as e:
+            sleep(100_000)
+            
         if credentials:
             for url_pattern, rules in self.cfg.auto_fill_rules.items():
                 script = f"""
