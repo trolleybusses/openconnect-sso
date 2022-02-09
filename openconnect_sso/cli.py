@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import argparse
-from ast import alias
 import enum
 import logging
 import os
