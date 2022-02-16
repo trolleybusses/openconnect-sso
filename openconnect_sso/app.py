@@ -15,7 +15,7 @@ from prompt_toolkit.shortcuts import radiolist_dialog
 
 from openconnect_sso import config
 from openconnect_sso.authenticator import Authenticator, AuthResponseError
-from openconnect_sso.config import Credentials, Config
+from openconnect_sso.config import Credentials
 from openconnect_sso.profile import get_profiles
 
 from requests.exceptions import HTTPError
@@ -109,7 +109,9 @@ async def _run(args, cfg):
     if credentials:
         if not credentials.password:
             if sys.stdin.isatty():
-                credentials.password = getpass.getpass(prompt=f"Password ({args.user}): ")
+                credentials.password = getpass.getpass(
+                    prompt=f"Password ({args.user}): "
+                )
             else:
                 print(f"Password ({args.user}): ")
                 credentials.password = sys.stdin.readline().rstrip()
@@ -140,9 +142,14 @@ async def _run(args, cfg):
     if override_script:
         expanded = os.path.join(os.getcwd(), override_script)
         if not os.path.exists(expanded):
-            raise ValueError(f"Unable to locate override script at location '{expanded}'", 19)
+            raise ValueError(
+                f"Unable to locate override script at location '{expanded}'", 19
+            )
         elif Path(expanded).suffix != ".js":
-            raise ValueError(f"Invalid file type for override script '{expanded}'. Expected [.js]", 20)
+            raise ValueError(
+                f"Invalid file type for override script '{expanded}'. Expected [.js]",
+                20,
+            )
         else:
             logger.info(f"Using script at location {expanded}")
             override_script = expanded

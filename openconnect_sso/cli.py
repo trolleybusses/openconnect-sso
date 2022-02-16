@@ -96,7 +96,7 @@ def create_argparser():
         help="Time-out in seconds to wait during the SSO login flow",
         default="",
     )
-    
+
     parser.add_argument(
         "-V", "--version", action="version", version=f"%(prog)s {__version__}"
     )

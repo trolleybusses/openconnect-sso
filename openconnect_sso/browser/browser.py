@@ -32,7 +32,7 @@ class Browser:
         if self.display_mode == DisplayMode.HIDDEN:
             chrome_options.add_argument("headless")
             chrome_options.add_argument("no-sandbox")
-            chrome_options.add_argument('--disable-dev-shm-usage')
+            chrome_options.add_argument("--disable-dev-shm-usage")
 
         if self.proxy:
             proxy = Proxy()
@@ -50,9 +50,11 @@ class Browser:
             proxy.add_to_capabilities(capabilities)
 
         self.driver = webdriver.Chrome(
-            ChromeDriverManager(chrome_type=ChromeType.CHROMIUM, log_level=CRITICAL).install(),
+            ChromeDriverManager(
+                chrome_type=ChromeType.CHROMIUM, log_level=CRITICAL
+            ).install(),
             options=chrome_options,
-            desired_capabilities=capabilities
+            desired_capabilities=capabilities,
         )
         return self
 
@@ -62,12 +64,20 @@ class Browser:
             if self.cfg.credentials:
                 script = self.get_script(self.cfg.credentials, override_script)
                 self.driver.execute_script(script)
-                return WebDriverWait(self.driver, self.cfg.authenticate_timeout).until(lambda driver: get_cookie(self.driver.get_cookies(), expected_cookie_name) if has_cookie(driver.get_cookies(), expected_cookie_name) else False)
+                return WebDriverWait(self.driver, self.cfg.authenticate_timeout).until(
+                    lambda driver: get_cookie(
+                        self.driver.get_cookies(), expected_cookie_name
+                    )
+                    if has_cookie(driver.get_cookies(), expected_cookie_name)
+                    else False
+                )
         except TimeoutException:
             if self.display_mode == DisplayMode.HIDDEN:
                 self.save_screenshot()
-            raise InvalidStateError(f"Failed to locate cookie with name {expected_cookie_name}")
-    
+            raise InvalidStateError(
+                f"Failed to locate cookie with name {expected_cookie_name}"
+            )
+
     def save_screenshot(self):
         current_time = datetime.now().strftime("%Y%m%d-%H%M%S")
         save_path = os.path.join(os.getcwd(), f"failed-exchange_{current_time}.png")
@@ -85,7 +95,7 @@ class Browser:
                 return os.path.expandvars(f.read())
 
         for url_pattern, rules in self.cfg.auto_fill_rules.items():
-                return f"""
+            return f"""
 // ==UserScript==
 // @include {url_pattern}
 // ==/UserScript==
