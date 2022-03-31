@@ -59,10 +59,11 @@ If you want to save credentials and get them automatically
 injected in the web browser:
 
 ```shell
-$ openconnect-sso --server vpn.server.com/group --user user@domain.com
+$ openconnect-sso --server vpn.server.com/group --user user@domain.com --authenticate-timeout 120 
 Password (user@domain.com):
 [info     ] Authenticating to VPN endpoint ...
 ```
+authenticate-timeout is optional, the default is 10s which can make entering details tricky.
 
 User credentials are automatically saved to the users login keyring (if
 available).
