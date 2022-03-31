@@ -3,21 +3,34 @@
 Wrapper script for OpenConnect supporting Azure AD (SAMLv2) authentication
 to Cisco SSL-VPNs
 
-[![Tests Status
-](https://github.com/vlaci/openconnect-sso/workflows/Tests/badge.svg?branch=master&event=push)](https://github.com/vlaci/openconnect-sso/actions?query=workflow%3ATests+branch%3Amaster+event%3Apush)
+This is a fork of a [fork](https://github.com/mgagliardo91/openconnect-sso/tree/custom-scripts) of [openconnect-sso](https://github.com/vlaci/openconnect-sso).  This removes the QT5 requirement and replaces it with Selenium.  This greatly increases the ease of using openconnect on Apple Silicon due to Qt5 being unsupported.  It also allows the use of openconnect-sso inside a docker container with custom scripting. 
+
+The only purpose of this fork is to add some simple documentation on how to get this working, particularly on M1 Macs.
+
 
 ## Installation
 
-### Using pip/pipx
+### MacOS - Apple Silicon
+
+#### Pre install setup
+
+You will need openconnect first - the easiest is to install via brew
+```shell
+brew install openconnect
+```
+
+You will also need chrome or chromium browser.
+
+#### Using pip/pipx
 
 A generic way that works on most 'standard' Linux distributions out of the box.
 The following example shows how to install `openconect-sso` along with its
 dependencies including Qt:
 
 ```shell
-$ pip install --user pipx
+$ pip install --user pipx # use brew install pip if pip not installed
 Successfully installed pipx
-$ pipx install "openconnect-sso[full]"
+$ pipx install "https://github.com/mgagliardo91/openconnect-sso/archive/refs/heads/custom-scripts.zip"
 ⣾ installing openconnect-sso
   installed package openconnect-sso 0.4.0, Python 3.7.5
   These apps are now globally available
@@ -37,68 +50,8 @@ You likely need to open a new terminal or re-login for the changes to take
 effect. ✨ 🌟 ✨
 ```
 
-If you have Qt 5.x installed, you can skip the installation of bundled Qt version:
-
-``` bash
-pipx install openconnect-sso
-```
-
 Of course you can also install via `pip` instead of `pipx` if you'd like to
 install system-wide or a virtualenv of your choice.
-
-### On Arch Linux
-
-There is an unofficial package available for Arch Linux on
-[AUR](https://aur.archlinux.org/packages/openconnect-sso/). You can use your
-favorite AUR helper to install it:
-
-``` shell
-yay -S openconnect-sso
-```
-
-### Using nix
-
-The easiest method to try is by installing directly:
-
-```shell
-$ nix-env -i -f https://github.com/vlaci/openconnect-sso/archive/master.tar.gz
-unpacking 'https://github.com/vlaci/openconnect-sso/archive/master.tar.gz'...
-[...]
-installing 'openconnect-sso-0.4.0'
-these derivations will be built:
-  /nix/store/2z47740z1rr2cfqfin5lnq04sq3c5xjg-openconnect-sso-0.4.0.drv
-[...]
-building '/nix/store/50q496iqf840wi8b95cfmgn07k6y5b59-user-environment.drv'...
-created 606 symlinks in user environment
-$ openconnect-sso
-```
-
-An overlay is also available to use in nix expressions:
-
-``` nix
-let
-  openconnectOverlay = import "${builtins.fetchTarball https://github.com/vlaci/openconnect-sso/archive/master.tar.gz}/overlay.nix";
-  pkgs = import <nixpkgs> { overlays = [ openconnectOverlay ]; };
-in
-  #  pkgs.openconnect-sso is available in this context
-```
-
-... or to use in `configuration.nix`:
-
-``` nix
-{ config, ... }:
-
-{
-  nixpkgs.overlays = [
-    (import "${builtins.fetchTarball https://github.com/vlaci/openconnect-sso/archive/master.tar.gz}/overlay.nix")
-  ];
-}
-```
-
-### Windows *(EXPERIMENTAL)*
-
-Install with [pip/pipx](#using-pippipx) and be sure that you have `sudo` and `openconnect`
-executable commands in your PATH.
 
 ## Usage
 
