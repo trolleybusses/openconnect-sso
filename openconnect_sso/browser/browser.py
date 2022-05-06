@@ -68,10 +68,13 @@ class Browser:
 
     def authenticate_at(self, url, expected_cookie_name, override_script):
         try:
+            script = self.get_script(self.cfg.credentials, override_script)
+            self.driver.execute_script(script)
+            self.driver.execute_cdp_cmd("Page.addScriptToEvaluateOnNewDocument", script)
             self.driver.get(url)
             if self.cfg.credentials:
                 script = self.get_script(self.cfg.credentials, override_script)
-                self.driver.execute_script(script)
+                # self.driver.execute_script(script)
                 return WebDriverWait(self.driver, self.cfg.authenticate_timeout).until(
                     lambda driver: get_cookie(
                         self.driver.get_cookies(), expected_cookie_name
