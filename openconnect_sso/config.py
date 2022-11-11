@@ -5,6 +5,7 @@ from urllib.parse import urlparse, urlunparse
 import attr
 import keyring
 import keyring.errors
+import pyotp
 import structlog
 import toml
 import xdg.BaseDirectory
@@ -87,8 +88,17 @@ def get_default_auto_fill_rules():
         "https://*": [
             AutoFillRule(selector="div[id=passwordError]", action="stop").as_dict(),
             AutoFillRule(selector="input[type=email]", fill="username").as_dict(),
-            AutoFillRule(selector="input[type=password]", fill="password").as_dict(),
-            AutoFillRule(selector="input[type=submit]", action="click").as_dict(),
+            AutoFillRule(selector="input[name=passwd]", fill="password").as_dict(),
+            AutoFillRule(
+                selector="input[data-report-event=Signin_Submit]", action="click"
+            ).as_dict(),
+            AutoFillRule(
+                selector="div[data-value=PhoneAppOTP]", action="click"
+            ).as_dict(),
+            AutoFillRule(selector="a[id=signInAnotherWay]", action="click").as_dict(),
+            AutoFillRule(
+                selector="input[id=idTxtBx_SAOTCC_OTC]", fill="totp"
+            ).as_dict(),
         ]
     }
 
@@ -117,6 +127,22 @@ class Credentials(ConfigNode):
             keyring.set_password(APP_NAME, self.username, value)
         except keyring.errors.KeyringError:
             logger.info("Cannot save password to keyring.")
+
+    @property
+    def totp(self):
+        try:
+            totpsecret = keyring.get_password(APP_NAME, "totp/" + self.username)
+            return pyotp.TOTP(totpsecret).now() if totpsecret else None
+        except keyring.errors.KeyringError:
+            logger.info("Cannot retrieve saved totp info from keyring.")
+            return ""
+
+    @totp.setter
+    def totp(self, value):
+        try:
+            keyring.set_password(APP_NAME, "totp/" + self.username, value)
+        except keyring.errors.KeyringError:
+            logger.info("Cannot save totp secret to keyring.")
 
 
 @attr.s

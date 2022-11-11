@@ -13,11 +13,13 @@ logger = structlog.get_logger()
 
 
 class Authenticator:
-    def __init__(self, cfg, host, proxy=None):
+    def __init__(self, host, proxy=None, credentials=None, version=None):
         self.host = host
         self.cfg = cfg
         self.proxy = proxy
-        self.session = create_http_session(proxy)
+        self.credentials = credentials
+        self.version = version
+        self.session = create_http_session(proxy, version)
 
     async def authenticate(self, override_script, display_mode):
         self._detect_authentication_target_url()
@@ -63,7 +65,7 @@ class Authenticator:
         logger.debug("Auth target url", url=self.host.vpn_url)
 
     def _start_authentication(self):
-        request = _create_auth_init_request(self.host, self.host.vpn_url)
+        request = _create_auth_init_request(self.host, self.host.vpn_url, self.version)
         logger.debug("Sending auth init request", content=request)
         response = self.session.post(self.host.vpn_url, request)
         logger.debug("Auth init response received", content=response.content)
@@ -78,7 +80,7 @@ class Authenticator:
 
     def _complete_authentication(self, auth_request_response, sso_token):
         request = _create_auth_finish_request(
-            self.host, auth_request_response, sso_token
+            self.host, auth_request_response, sso_token, self.version
         )
         logger.debug("Sending auth finish request", content=request)
         response = self.session.post(self.host.vpn_url, request)
@@ -94,12 +96,12 @@ class AuthResponseError(AuthenticationError):
     pass
 
 
-def create_http_session(proxy):
+def create_http_session(proxy, version):
     session = requests.Session()
     session.proxies = {"http": proxy, "https": proxy}
     session.headers.update(
         {
-            "User-Agent": "AnyConnect Linux_64 4.7.00136",
+            "User-Agent": f"AnyConnect Linux_64 {version}",
             "Accept": "*/*",
             "Accept-Encoding": "identity",
             "X-Transcend-Version": "1",
@@ -115,7 +117,7 @@ def create_http_session(proxy):
 E = objectify.ElementMaker(annotate=False)
 
 
-def _create_auth_init_request(host, url):
+def _create_auth_init_request(host, url, version):
     ConfigAuth = getattr(E, "config-auth")
     Version = E.version
     DeviceId = getattr(E, "device-id")
@@ -126,7 +128,7 @@ def _create_auth_init_request(host, url):
 
     root = ConfigAuth(
         {"client": "vpn", "type": "init", "aggregate-auth-version": "2"},
-        Version({"who": "vpn"}, "4.7.00136"),
+        Version({"who": "vpn"}, version),
         DeviceId("linux-64"),
         GroupSelect(host.name),
         GroupAccess(url),
@@ -205,7 +207,7 @@ class AuthCompleteResponse:
     server_cert_hash = attr.ib(converter=str)
 
 
-def _create_auth_finish_request(host, auth_info, sso_token):
+def _create_auth_finish_request(host, auth_info, sso_token, version):
     ConfigAuth = getattr(E, "config-auth")
     Version = E.version
     DeviceId = getattr(E, "device-id")
@@ -216,7 +218,7 @@ def _create_auth_finish_request(host, auth_info, sso_token):
 
     root = ConfigAuth(
         {"client": "vpn", "type": "auth-reply", "aggregate-auth-version": "2"},
-        Version({"who": "vpn"}, "4.7.00136"),
+        Version({"who": "vpn"}, version),
         DeviceId("linux-64"),
         SessionToken(),
         SessionId(),

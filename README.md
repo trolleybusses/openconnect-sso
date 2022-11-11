@@ -3,7 +3,7 @@
 Wrapper script for OpenConnect supporting Azure AD (SAMLv2) authentication
 to Cisco SSL-VPNs
 
-This is a fork of a [fork](https://github.com/mgagliardo91/openconnect-sso/tree/custom-scripts) of [openconnect-sso](https://github.com/vlaci/openconnect-sso).  This removes the QT5 requirement and replaces it with Selenium.  This greatly increases the ease of using openconnect on Apple Silicon due to Qt5 being unsupported.  It also allows the use of openconnect-sso inside a docker container with custom scripting. 
+This is a fork of a [fork](https://github.com/mgagliardo91/openconnect-sso/tree/custom-scripts) of [openconnect-sso](https://github.com/vlaci/openconnect-sso).  This removes the QT5 requirement and replaces it with Selenium.  This greatly increases the ease of using openconnect on Apple Silicon due to Qt5 being unsupported.  It also allows the use of openconnect-sso inside a docker container with custom scripting.
 
 The only purpose of this fork is to add some simple documentation on how to get this working, particularly on M1 Macs.
 
@@ -30,7 +30,7 @@ dependencies including Qt:
 ```shell
 $ pip install --user pipx # use brew install pip if pip not installed
 Successfully installed pipx
-$ pipx install "https://github.com/mgagliardo91/openconnect-sso/archive/refs/heads/custom-scripts.zip"
+$ pipx install "openconnect-sso"
 ⣾ installing openconnect-sso
   installed package openconnect-sso 0.4.0, Python 3.7.5
   These apps are now globally available
@@ -59,7 +59,7 @@ If you want to save credentials and get them automatically
 injected in the web browser:
 
 ```shell
-$ openconnect-sso --server vpn.server.com/group --user user@domain.com --authenticate-timeout 120 
+$ openconnect-sso --server vpn.server.com/group --user user@domain.com --authenticate-timeout 120
 Password (user@domain.com):
 [info     ] Authenticating to VPN endpoint ...
 ```
@@ -81,57 +81,18 @@ Configuration is saved in `$XDG_CONFIG_HOME/openconnect-sso/config.toml`. On
 typical Linux installations it is located under
 `$HOME/.config/openconnect-sso/config.toml`
 
-Example configuration (generated on first run):
+For CISCO-VPN and TOTP the following seems to work by tuning the config.toml
+and removing the default "submit"-action to the following:
 
-```toml
-on_disconnect = ""
-override_script = ""
-authenticate_timeout = 10
-
-[default_profile]
-address = ""
-user_group = ""
-name = ""
-
-[credentials]
-username = ""
-
-[auto_fill_rules]
-[[auto_fill_rules."https://*"]]
-selector = "div[id=passwordError]"
-action = "stop"
-
-[[auto_fill_rules."https://*"]]
-selector = "input[type=email]"
-fill = "username"
-
-[[auto_fill_rules."https://*"]]
-selector = "input[type=password]"
-fill = "password"
-
-[[auto_fill_rules."https://*"]]
-selector = "input[type=submit]"
-action = "click"
 ```
+[[auto_fill_rules."https://*"]]
+selector = "input[data-report-event=Signin_Submit]"
+action = "click"
 
-## Custom SSO script
-
-openconnect-sso uses [Selenium](https://selenium-python.readthedocs.io/) to interface with the browser in order to automate entering the credentials required to achieve an access token for connecting with `openconnect`.
-
-If the `auto_fill_rules` in the _config.toml_ file do not meet the needs of your usage, the path to a custom javascript userscript can be passed via the argument `--override-script` or in the configuration by specifying a value for `override_script`.
-
-This file is expanded with environment variables including `USERNAME` and `PASSWORD` to enable the same script to be applied across unique logins.
-
-An example of the a script is located at [example/defaultRules.js](./example/defaultRules.js). This example is the same script that is executed with the default `auto_fill_rules`.
-
-## Headless-Mode
-
-Headless usage can be specified using the argument `--browser-display-mode=hidden`. In this mode, the browser will not be displayed while the script interacts with the SSO provider. This mode can also be used to enable support for containerized environments
-
-### Debugging Headless Execution
-
-When running in headless mode, any failures in attempting to authenticate in the browser will attempt to be captured in a screenshot which will be saved to the current working directory.
-
+[[auto_fill_rules."https://*"]]
+selector = "input[type=tel]"
+fill = "totp"
+```
 
 ## Development
 
