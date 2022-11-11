@@ -13,7 +13,7 @@ logger = structlog.get_logger()
 
 
 class Authenticator:
-    def __init__(self, host, proxy=None, credentials=None, version=None):
+    def __init__(self, host, proxy=None, credentials=None, version=None, cfg=None):
         self.host = host
         self.cfg = cfg
         self.proxy = proxy
@@ -43,7 +43,7 @@ class Authenticator:
         auth_request_response = response
 
         sso_token = self._authenticate_in_browser(
-            auth_request_response, override_script, display_mode
+            auth_request_response, display_mode, override_script
         )
 
         response = self._complete_authentication(auth_request_response, sso_token)
@@ -72,10 +72,10 @@ class Authenticator:
         return parse_response(response)
 
     def _authenticate_in_browser(
-        self, auth_request_response, override_script, display_mode
+        self, auth_request_response, display_mode, override_script
     ):
         return authenticate_in_browser(
-            self.cfg, self.proxy, auth_request_response, override_script, display_mode
+            self.proxy, auth_request_response, self.credentials, display_mode, override_script, self.cfg
         )
 
     def _complete_authentication(self, auth_request_response, sso_token):

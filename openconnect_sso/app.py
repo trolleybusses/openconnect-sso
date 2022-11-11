@@ -201,9 +201,9 @@ async def select_profile(profile_list):
     return selection
 
 
-def authenticate_to(host, proxy, credentials, display_mode, version):
+def authenticate_to(host, proxy, credentials, display_mode, version, cfg):
     logger.info("Authenticating to VPN endpoint", name=host.name, address=host.address)
-    return Authenticator(host, proxy, credentials, version).authenticate(display_mode)
+    return Authenticator(host, proxy, credentials, version, cfg).authenticate(display_mode)
 
 
 def run_openconnect(auth_info, host, proxy, version, args):
