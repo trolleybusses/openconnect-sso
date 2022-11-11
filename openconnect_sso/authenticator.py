@@ -75,7 +75,7 @@ class Authenticator:
         self, auth_request_response, display_mode, override_script
     ):
         return authenticate_in_browser(
-            self.proxy, auth_request_response, self.credentials, display_mode, override_script, self.cfg
+            self.proxy, auth_request_response, display_mode, override_script, self.cfg
         )
 
     def _complete_authentication(self, auth_request_response, sso_token):
