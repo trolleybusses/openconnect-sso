@@ -21,7 +21,7 @@ class Authenticator:
         self.version = version
         self.session = create_http_session(proxy, version)
 
-    async def authenticate(self, override_script, display_mode):
+    async def authenticate(self, display_mode, override_script):
         self._detect_authentication_target_url()
 
         response = self._start_authentication()
