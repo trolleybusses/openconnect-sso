@@ -173,7 +173,7 @@ async def _run(args, cfg):
     display_mode = config.DisplayMode[args.browser_display_mode.upper()]
 
     auth_response = await authenticate_to(
-        selected_profile, args.proxy, credentials, display_mode, args.ac_version
+        selected_profile, args.proxy, credentials, display_mode, args.ac_version, cfg
     )
 
     if args.on_disconnect and not cfg.on_disconnect:
