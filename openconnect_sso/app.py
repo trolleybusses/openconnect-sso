@@ -165,7 +165,7 @@ async def _run(args, cfg):
             )
         else:
             logger.info(f"Using script at location {expanded}")
-            override_script = expanded
+            cfg.override_script = expanded
 
     if args.authenticate_timeout:
         cfg.authenticate_timeout = int(args.authenticate_timeout)

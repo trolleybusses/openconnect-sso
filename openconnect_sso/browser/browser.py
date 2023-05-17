@@ -1,8 +1,10 @@
 from asyncio import InvalidStateError
-import os
 import json
 import os
+import re
 import structlog
+import time
+import threading
 from logging import CRITICAL
 
 from datetime import datetime
@@ -15,6 +17,7 @@ from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
 from webdriver_manager.core.utils import ChromeType
 from selenium.webdriver.common.proxy import Proxy, ProxyType
+from selenium.webdriver.common.log import Log
 from ..config import DisplayMode
 
 logger = structlog.get_logger()
@@ -28,7 +31,10 @@ class Browser:
 
     def __enter__(self):
         chrome_options = Options()
+        chrome_options.add_argument("--verbose")
+        chrome_options.add_argument("--log-level=ALL")
         capabilities = DesiredCapabilities.CHROME
+        capabilities['goog:loggingPrefs'] = { 'browser':'ALL' }
 
         if self.display_mode == DisplayMode.HIDDEN:
             chrome_options.add_argument("headless")
@@ -63,29 +69,40 @@ class Browser:
             options=chrome_options,
             desired_capabilities=capabilities,
         )
+
         return self
 
+    def _open_browser(self, url):
+        self.driver.get(url)
+        return
+
     def authenticate_at(self, url, expected_cookie_name, override_script):
-        try:
-            script = self.get_script(self.cfg.credentials, override_script)
-            self.driver.execute_cdp_cmd("Page.addScriptToEvaluateOnNewDocument", {
-                "source": script
-            })
-            self.driver.get(url)
-            if self.cfg.credentials:
-                return WebDriverWait(self.driver, self.cfg.authenticate_timeout).until(
-                    lambda driver: get_cookie(
-                        self.driver.get_cookies(), expected_cookie_name
+        script = self.get_script(self.cfg.credentials, override_script)
+        self.driver.execute_cdp_cmd("Page.addScriptToEvaluateOnNewDocument", {
+            "source": script
+        })
+
+        browser_thread = threading.Thread(target=self._open_browser, args=(url,))
+        browser_thread.start()
+
+        if self.cfg.credentials:
+            start_time = time.time()
+            got_response_code = False
+            while has_cookie(self.driver.get_cookies(), expected_cookie_name) == False:
+                get_cookie(self.driver.get_cookies(), expected_cookie_name)
+                if got_response_code == False:
+                    for entry in self.driver.get_log('browser'):
+                        if "CODE_RESPONSE:" in entry['message']:
+                            got_response_code = True
+                            response_code = re.sub(r'console-api (\d+:\d+) CODE_RESPONSE: ', '', entry['message'].replace('"', ''))
+                            logger.info(f'Code: {response_code}')
+                if time.time() - start_time > self.cfg.authenticate_timeout:
+                    raise InvalidStateError(
+                        f"Failed to locate cookie with name {expected_cookie_name}"
                     )
-                    if has_cookie(driver.get_cookies(), expected_cookie_name)
-                    else False
-                )
-        except TimeoutException:
-            if self.display_mode == DisplayMode.HIDDEN:
-                self.save_screenshot()
-            raise InvalidStateError(
-                f"Failed to locate cookie with name {expected_cookie_name}"
-            )
+                time.sleep(0.5)
+
+            return get_cookie(self.driver.get_cookies(), expected_cookie_name)
 
     def save_screenshot(self):
         current_time = datetime.now().strftime("%Y%m%d-%H%M%S")
