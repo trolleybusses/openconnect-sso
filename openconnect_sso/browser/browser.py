@@ -64,7 +64,7 @@ class Browser:
         self.driver = webdriver.Chrome(
             ChromeDriverManager(
                 chrome_type=ChromeType.CHROMIUM,
-                latest_release_url=f"https://chromedriver.storage.googleapis.com/LATEST_RELEASE{chrome_base_version}",
+                version="114.0.5735.90"
             ).install(),
             options=chrome_options,
             desired_capabilities=capabilities,
