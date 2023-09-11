@@ -15,7 +15,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
-from webdriver_manager.core.utils import ChromeType
+from webdriver_manager.core.os_manager import ChromeType
 from selenium.webdriver.common.proxy import Proxy, ProxyType
 from selenium.webdriver.common.log import Log
 from ..config import DisplayMode
@@ -63,8 +63,7 @@ class Browser:
         )
         self.driver = webdriver.Chrome(
             ChromeDriverManager(
-                chrome_type=ChromeType.CHROMIUM,
-                version="114.0.5735.90"
+                chrome_type=ChromeType.CHROMIUM
             ).install(),
             options=chrome_options,
             desired_capabilities=capabilities,
