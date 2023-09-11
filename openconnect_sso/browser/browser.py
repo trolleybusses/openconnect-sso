@@ -11,7 +11,6 @@ from datetime import datetime
 from urllib.parse import urlparse
 
 from selenium import webdriver
-from selenium.webdriver import DesiredCapabilities
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.chrome.service import Service
@@ -24,7 +23,6 @@ from ..config import DisplayMode
 
 logger = structlog.get_logger()
 
-
 class Browser:
     def __init__(self, cfg, proxy=None, display_mode=DisplayMode.SHOWN):
         self.cfg = cfg
@@ -35,7 +33,7 @@ class Browser:
         chrome_options = Options()
         chrome_options.add_argument("--verbose")
         chrome_options.add_argument("--log-level=ALL")
-        capabilities = DesiredCapabilities.CHROME
+        capabilities = webdriver.DesiredCapabilities.CHROME.copy()
         capabilities['goog:loggingPrefs'] = { 'browser':'ALL' }
 
         if self.display_mode == DisplayMode.HIDDEN:
@@ -58,16 +56,12 @@ class Browser:
 
             proxy.add_to_capabilities(capabilities)
 
-        chrome_base_version = (
-            f"_{os.getenv('CHROME_BASE_VERSION')}"
-            if os.getenv("CHROME_BASE_VERSION") is not None
-            else ""
-        )
         service = Service()
+
         self.driver = webdriver.Chrome(
             service=service,
             options=chrome_options,
-            desired_capabilities=capabilities,
+            desired_capabilities=capabilities
         )
 
         return self
