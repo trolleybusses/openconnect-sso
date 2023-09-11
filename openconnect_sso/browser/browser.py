@@ -33,8 +33,7 @@ class Browser:
         chrome_options = Options()
         chrome_options.add_argument("--verbose")
         chrome_options.add_argument("--log-level=ALL")
-        capabilities = webdriver.DesiredCapabilities.CHROME.copy()
-        capabilities['goog:loggingPrefs'] = { 'browser':'ALL' }
+        chrome_options.set_capability("goog:loggingPrefs", {"browser": "ALL"})
 
         if self.display_mode == DisplayMode.HIDDEN:
             chrome_options.add_argument("headless")
