@@ -60,8 +60,7 @@ class Browser:
 
         self.driver = webdriver.Chrome(
             service=service,
-            options=chrome_options,
-            desired_capabilities=capabilities
+            options=chrome_options
         )
 
         return self
