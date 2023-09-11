@@ -56,7 +56,7 @@ class Browser:
 
             proxy.add_to_capabilities(capabilities)
 
-        service = Service()
+        service = Service(service_args=['--log-level=DEBUG'])
 
         self.driver = webdriver.Chrome(
             service=service,
