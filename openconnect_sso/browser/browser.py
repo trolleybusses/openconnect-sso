@@ -9,13 +9,15 @@ from logging import CRITICAL
 
 from datetime import datetime
 from urllib.parse import urlparse
+
 from selenium import webdriver
 from selenium.webdriver import DesiredCapabilities
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.common.exceptions import TimeoutException
+from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
-from webdriver_manager.chrome import ChromeDriverManager
-from webdriver_manager.core.os_manager import ChromeType
+# from webdriver_manager.chrome import ChromeDriverManager
+# from webdriver_manager.core.os_manager import ChromeType
 from selenium.webdriver.common.proxy import Proxy, ProxyType
 from selenium.webdriver.common.log import Log
 from ..config import DisplayMode
@@ -61,10 +63,9 @@ class Browser:
             if os.getenv("CHROME_BASE_VERSION") is not None
             else ""
         )
+        service = Service()
         self.driver = webdriver.Chrome(
-            ChromeDriverManager(
-                chrome_type=ChromeType.CHROMIUM
-            ).install(),
+            service=service,
             options=chrome_options,
             desired_capabilities=capabilities,
         )
