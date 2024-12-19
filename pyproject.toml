@@ -20,7 +20,7 @@ classifiers = [
 openconnect-sso = "openconnect_sso.cli:main"
 
 [tool.poetry.dependencies]
-python = "^3.11"
+python = "^3.9"
 attrs = ">=24.3"
 colorama = "^0.4"
 importlib-metadata = "^8.5"
@@ -34,6 +34,8 @@ toml = "^0.10"
 setuptools = ">40.0"
 PySocks = "^1.7.1"
 pyotp = "^2.7.0"
+pyqt6-qt6 = "6.7.3"
+pyproject-hooks = "1.0.0"
 pyqt6 = "6.7.1"
 pyqt6-webengine = "6.7.0"
 
