@@ -3,6 +3,7 @@ import json
 import os
 import re
 import structlog
+import subprocess
 import time
 import threading
 from logging import CRITICAL
@@ -18,7 +19,6 @@ from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from selenium.webdriver.firefox.service import Service
 from selenium.webdriver.firefox.options import Options
-from selenium.webdriver.firefox.FirefoxDriverLogLevel import FirefoxDriverLogLevel
 # from webdriver_manager.chrome import ChromeDriverManager
 # from webdriver_manager.core.os_manager import ChromeType
 from selenium.webdriver.common.proxy import Proxy, ProxyType
@@ -35,10 +35,9 @@ class Browser:
 
     def __enter__(self):
         firefox_options = Options()
-        firefox_options.setLogLevel(FirefoxDriverLogLevel.DEBUG)
 
         if self.display_mod == DisplayMode.HIDDEN:
-            firefox_options.addArguments("--headless")
+            firefox_options.add_argument("-headless")
 
         # chrome_options = Options()
         # chrome_options.add_argument("--verbose")
@@ -65,7 +64,7 @@ class Browser:
 
             proxy.add_to_capabilities(capabilities)
 
-        service = Service(service_args=['--log-level=DEBUG'])
+        service = Service(log_output=subprocess.STDOUT, service_args=['--log', 'debug'])
 
         # self.driver = webdriver.Chrome(
         #     service=service,
