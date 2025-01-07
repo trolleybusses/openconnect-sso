@@ -36,7 +36,7 @@ class Browser:
     def __enter__(self):
         firefox_options = Options()
 
-        if self.display_mod == DisplayMode.HIDDEN:
+        if self.display_mode == DisplayMode.HIDDEN:
             firefox_options.add_argument("-headless")
 
         # chrome_options = Options()
