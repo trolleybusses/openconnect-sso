@@ -64,7 +64,16 @@ class Browser:
 
             proxy.add_to_capabilities(capabilities)
 
-        service = Service(log_output=subprocess.STDOUT, service_args=['--log', 'debug'])
+        service = Service(
+            executable_path='/usr/bin/geckodriver',
+            log_output=subprocess.STDOUT,
+            service_args=['--log', 'debug']
+        )
+
+        # service = Service(
+        #     executable_path='/usr/bin/chromedriver',
+        #     service_args=['--log-level=DEBUG']
+        # )
 
         # self.driver = webdriver.Chrome(
         #     service=service,
