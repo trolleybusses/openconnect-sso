@@ -13,8 +13,11 @@ from urllib.parse import urlparse
 from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.common.exceptions import TimeoutException
-from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.chrome.options import Options
+# from selenium.webdriver.chrome.service import Service
+# from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
+from selenium.webdriver.firefox.service import Service
+from selenium.webdriver.firefox.options import Options
 # from webdriver_manager.chrome import ChromeDriverManager
 # from webdriver_manager.core.os_manager import ChromeType
 from selenium.webdriver.common.proxy import Proxy, ProxyType
@@ -30,15 +33,21 @@ class Browser:
         self.display_mode = display_mode
 
     def __enter__(self):
-        chrome_options = Options()
-        chrome_options.add_argument("--verbose")
-        chrome_options.add_argument("--log-level=ALL")
-        chrome_options.set_capability("goog:loggingPrefs", {"browser": "ALL"})
+        firefox_options = Options()
+        firefox_options.setLogLevel("DEBUG")
 
-        if self.display_mode == DisplayMode.HIDDEN:
-            chrome_options.add_argument("headless")
-            chrome_options.add_argument("no-sandbox")
-            chrome_options.add_argument("--disable-dev-shm-usage")
+        if self.display_mod == DisplayMode.HIDDEN:
+            firefox_options.addArguments("--headless")
+
+        # chrome_options = Options()
+        # chrome_options.add_argument("--verbose")
+        # chrome_options.add_argument("--log-level=ALL")
+        # chrome_options.set_capability("goog:loggingPrefs", {"browser": "ALL"})
+
+        # if self.display_mode == DisplayMode.HIDDEN:
+        #     chrome_options.add_argument("headless")
+        #     chrome_options.add_argument("no-sandbox")
+        #     chrome_options.add_argument("--disable-dev-shm-usage")
 
         if self.proxy:
             proxy = Proxy()
@@ -57,9 +66,14 @@ class Browser:
 
         service = Service(service_args=['--log-level=DEBUG'])
 
-        self.driver = webdriver.Chrome(
+        # self.driver = webdriver.Chrome(
+        #     service=service,
+        #     options=chrome_options
+        # )
+
+        self.driver = webdriver.Firefox(
             service=service,
-            options=chrome_options
+            options=firefox_options
         )
 
         return self
