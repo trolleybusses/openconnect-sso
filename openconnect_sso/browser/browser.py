@@ -34,20 +34,20 @@ class Browser:
         self.display_mode = display_mode
 
     def __enter__(self):
-        firefox_options = Options()
-
-        if self.display_mode == DisplayMode.HIDDEN:
-            firefox_options.add_argument("-headless")
-
-        # chrome_options = Options()
-        # chrome_options.add_argument("--verbose")
-        # chrome_options.add_argument("--log-level=ALL")
-        # chrome_options.set_capability("goog:loggingPrefs", {"browser": "ALL"})
+        # firefox_options = Options()
 
         # if self.display_mode == DisplayMode.HIDDEN:
-        #     chrome_options.add_argument("headless")
-        #     chrome_options.add_argument("no-sandbox")
-        #     chrome_options.add_argument("--disable-dev-shm-usage")
+        #     firefox_options.add_argument("-headless")
+
+        chrome_options = Options()
+        chrome_options.add_argument("--verbose")
+        chrome_options.add_argument("--log-level=ALL")
+        chrome_options.set_capability("goog:loggingPrefs", {"browser": "ALL"})
+
+        if self.display_mode == DisplayMode.HIDDEN:
+            chrome_options.add_argument("headless")
+            chrome_options.add_argument("no-sandbox")
+            chrome_options.add_argument("--disable-dev-shm-usage")
 
         if self.proxy:
             proxy = Proxy()
@@ -64,26 +64,26 @@ class Browser:
 
             proxy.add_to_capabilities(capabilities)
 
-        service = Service(
-            executable_path='/usr/bin/geckodriver',
-            log_output=subprocess.STDOUT,
-            service_args=['--log', 'debug']
-        )
-
         # service = Service(
-        #     executable_path='/usr/bin/chromedriver',
-        #     service_args=['--log-level=DEBUG']
+        #     executable_path='/usr/bin/geckodriver',
+        #     log_output=subprocess.STDOUT,
+        #     service_args=['--log', 'debug']
         # )
 
-        # self.driver = webdriver.Chrome(
-        #     service=service,
-        #     options=chrome_options
-        # )
-
-        self.driver = webdriver.Firefox(
-            service=service,
-            options=firefox_options
+        service = Service(
+            executable_path='/usr/bin/chromedriver',
+            service_args=['--log-level=DEBUG']
         )
+
+        self.driver = webdriver.Chrome(
+            service=service,
+            options=chrome_options
+        )
+
+        # self.driver = webdriver.Firefox(
+        #     service=service,
+        #     options=firefox_options
+        # )
 
         return self
 
