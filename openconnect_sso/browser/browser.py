@@ -28,11 +28,10 @@ from ..config import DisplayMode
 logger = structlog.get_logger()
 
 class Browser:
-    def __init__(self, cfg, proxy=None, display_mode=DisplayMode.SHOWN, chrome_driver_path="/usr/bin/chromedriver"):
+    def __init__(self, cfg, proxy=None, display_mode=DisplayMode.SHOWN):
         self.cfg = cfg
         self.proxy = proxy
         self.display_mode = display_mode
-        self.chrome_driver_path = chrome_driver_path
 
     def __enter__(self):
         # firefox_options = Options()
@@ -72,7 +71,7 @@ class Browser:
         # )
 
         service = Service(
-            executable_path=self.chrome_driver_path,
+            executable_path='/usr/bin/chromedriver',
             service_args=['--log-level=DEBUG']
         )
 

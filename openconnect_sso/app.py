@@ -171,10 +171,9 @@ async def _run(args, cfg):
         cfg.authenticate_timeout = int(args.authenticate_timeout)
 
     display_mode = config.DisplayMode[args.browser_display_mode.upper()]
-    chrome_driver_path = args.chrome_driver_path
 
     auth_response = await authenticate_to(
-        selected_profile, args.proxy, credentials, display_mode, chrome_driver_path, args.ac_version, cfg
+        selected_profile, args.proxy, credentials, display_mode, args.ac_version, cfg
     )
 
     if args.on_disconnect and not cfg.on_disconnect:
@@ -202,9 +201,9 @@ async def select_profile(profile_list):
     return selection
 
 
-def authenticate_to(host, proxy, credentials, display_mode, chrome_driver_path, version, cfg):
+def authenticate_to(host, proxy, credentials, display_mode, version, cfg):
     logger.info("Authenticating to VPN endpoint", name=host.name, address=host.address)
-    return Authenticator(host, proxy, credentials, version, cfg).authenticate(display_mode, chrome_driver_path, cfg.override_script)
+    return Authenticator(host, proxy, credentials, version, cfg).authenticate(display_mode, cfg.override_script)
 
 
 def run_openconnect(auth_info, host, proxy, version, args):

@@ -117,12 +117,6 @@ def create_argparser():
     )
 
     parser.add_argument(
-        "--chrome-driver-path",
-        help="Path to the ChromeDriver executable",
-        default="/usr/bin/chromedriver",
-    )
-
-    parser.add_argument(
         "openconnect_args",
         help="Arguments passed to openconnect",
         action=StoreOpenConnectArgs,
