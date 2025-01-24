@@ -71,7 +71,7 @@ class Browser:
         # )
 
         service = Service(
-            executable_path='/usr/bin/chromedriver',
+            executable_path='/usr/local/bin/chromedriver',
             service_args=['--log-level=DEBUG']
         )
 
