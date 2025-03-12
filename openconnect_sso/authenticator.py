@@ -6,7 +6,7 @@ from lxml import etree, objectify
 from openconnect_sso.saml_authenticator import authenticate_in_browser
 
 # See https://stackoverflow.com/a/41041028
-requests.packages.urllib3.util.ssl_.DEFAULT_CIPHERS += ":HIGH:!DH:!aNULL"
+# requests.packages.urllib3.util.ssl_.DEFAULT_CIPHERS += ":HIGH:!DH:!aNULL"
 
 
 logger = structlog.get_logger()

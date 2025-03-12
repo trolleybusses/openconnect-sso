@@ -3,6 +3,7 @@ import json
 import os
 import re
 import structlog
+import subprocess
 import time
 import threading
 from logging import CRITICAL
@@ -15,6 +16,9 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
+# from selenium.webdriver.firefox.service import Service
+# from selenium.webdriver.firefox.options import Options
 # from webdriver_manager.chrome import ChromeDriverManager
 # from webdriver_manager.core.os_manager import ChromeType
 from selenium.webdriver.common.proxy import Proxy, ProxyType
@@ -30,6 +34,11 @@ class Browser:
         self.display_mode = display_mode
 
     def __enter__(self):
+        # firefox_options = Options()
+
+        # if self.display_mode == DisplayMode.HIDDEN:
+        #     firefox_options.add_argument("-headless")
+
         chrome_options = Options()
         chrome_options.add_argument("--verbose")
         chrome_options.add_argument("--log-level=ALL")
@@ -55,12 +64,26 @@ class Browser:
 
             proxy.add_to_capabilities(capabilities)
 
-        service = Service(service_args=['--log-level=DEBUG'])
+        # service = Service(
+        #     executable_path='/usr/bin/geckodriver',
+        #     log_output=subprocess.STDOUT,
+        #     service_args=['--log', 'debug']
+        # )
+
+        service = Service(
+            executable_path='/usr/local/bin/chromedriver',
+            service_args=['--log-level=DEBUG']
+        )
 
         self.driver = webdriver.Chrome(
             service=service,
             options=chrome_options
         )
+
+        # self.driver = webdriver.Firefox(
+        #     service=service,
+        #     options=firefox_options
+        # )
 
         return self
 
